@@ -7,29 +7,28 @@ import java.net.MulticastSocket;
 import java.nio.ByteBuffer;
 
 public class SrvVelocitats {
-    /* Servidor Multicast que proporciona la velocitat simulada d'un cos */
 
-    MulticastSocket socket;
-    InetAddress multicastIP;
-    int port;
-    boolean continueRunning = true;
-    Velocitat simulator;
+    MulticastSocket multicastSocket;
+    InetAddress inetAddress;
+    int puerto;
+    boolean continuar = true;
+    Velocitat velocitat;
 
     public SrvVelocitats(int portValue, String strIp) throws IOException {
-        socket = new MulticastSocket(portValue);
-        multicastIP = InetAddress.getByName(strIp);
-        port = portValue;
-        simulator = new Velocitat(100);
+        multicastSocket = new MulticastSocket(portValue);
+        inetAddress = InetAddress.getByName(strIp);
+        puerto = portValue;
+        velocitat = new Velocitat(100);
     }
 
     public void runServer() throws IOException{
-        DatagramPacket packet;
+        DatagramPacket datagramPacket;
         byte [] sendingData;
 
-        while(continueRunning){
-            sendingData = ByteBuffer.allocate(4).putInt(simulator.agafaVelocitat()).array();
-            packet = new DatagramPacket(sendingData, sendingData.length,multicastIP, port);
-            socket.send(packet);
+        while(continuar){
+            sendingData = ByteBuffer.allocate(4).putInt(velocitat.agafaVelocitat()).array();
+            datagramPacket = new DatagramPacket(sendingData, sendingData.length, inetAddress, puerto);
+            multicastSocket.send(datagramPacket);
 
             try {
                 Thread.sleep(1000);
@@ -37,17 +36,14 @@ public class SrvVelocitats {
                 ex.getMessage();
             }
 
-
         }
-        socket.close();
+        multicastSocket.close();
     }
 
     public static void main(String[] args) throws IOException {
-        //Canvieu la X.X per un número per formar un IP.
-        //Que no sigui la mateixa que la d'un altre company
         SrvVelocitats srvVel = new SrvVelocitats(5557, "224.0.2.12");
         srvVel.runServer();
-        System.out.println("Parat!");
+        System.out.println("Se acabo");
 
     }
 

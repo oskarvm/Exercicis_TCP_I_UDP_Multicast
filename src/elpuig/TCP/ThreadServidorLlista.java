@@ -2,32 +2,49 @@ package elpuig.TCP;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.List;
 
 public class ThreadServidorLlista implements Runnable {
-    /* Thread que gestiona la comunicació de SrvTcPAdivina.java i un cllient ClientTcpAdivina.java */
-
     Socket clientSocket = null;
-    ObjectInputStream input = null;
-    ObjectOutputStream output = null;
+    ObjectInputStream input;
+    ObjectOutputStream outpput;
+    List<Integer> msgEntrant, msgSortint;
+    boolean ordenado;
 
     public ThreadServidorLlista(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
-        output = new ObjectOutputStream(clientSocket.getOutputStream());
+        ordenado = false;
+        outpput = new ObjectOutputStream(clientSocket.getOutputStream());
         input = new ObjectInputStream(clientSocket.getInputStream());
     }
 
     @Override
     public void run() {
-        Llista ll = null;
         try {
-            ll = (Llista) input.readObject();
-            //ordenar
-            output.writeObject(ll);
-            output.flush();
-        } catch (IOException | ClassNotFoundException e) {
+            while(!ordenado) {
+                msgEntrant = (List<Integer>) input.readObject();
+
+                msgSortint = ordenarNumeros(msgEntrant);
+
+                outpput.writeObject(msgSortint);
+                outpput.flush();
+            }
+        }catch(IOException | ClassNotFoundException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public List<Integer> ordenarNumeros(List<Integer> ordenar) {
+        List<Integer> numerosOrdenados;
+        Collections.sort(ordenar);
+        numerosOrdenados = ordenar;
+        return numerosOrdenados;
     }
 
 }

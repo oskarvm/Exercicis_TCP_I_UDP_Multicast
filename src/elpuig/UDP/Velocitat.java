@@ -2,12 +2,6 @@ package elpuig.UDP;
 
 public class Velocitat {
 
-    /* Classe que porporciona una velocitat (int) aleatòria, per implementar l'exemple de Multicast:
-     * ClientVelocimetre1.java
-     * ClientVelocimetre2.java
-     * SrvVelocitats.java
-     */
-
     int vel,max;
     public Velocitat(int max) {
         this.max = max;
